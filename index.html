@@ -103,7 +103,7 @@ body{font-family:'Noto Serif KR',serif;min-height:100vh;
 <div class="lantern" style="left:92%;height:90px;animation-delay:1.2s"></div>
 <div class="lantern" style="left:28%;height:62px;animation-delay:0.6s"></div>
 <div class="lantern" style="left:72%;height:62px;animation-delay:1.8s"></div>
-
+ 
 <div class="page">
   <header class="hdr">
     <div class="hdeco">
@@ -114,16 +114,16 @@ body{font-family:'Noto Serif KR',serif;min-height:100vh;
     <h1 class="sititle">사주팔자</h1>
     <p class="sisub">생년월일시로 읽는 천명天命의 지도</p>
   </header>
-
+ 
   <div class="card">
     <div class="cn tl"></div><div class="cn tr"></div>
     <div class="cn bl"></div><div class="cn br"></div>
     <span class="cdeco" style="top:9px;left:9px">◈</span>
     <span class="cdeco" style="bottom:9px;right:9px">◈</span>
-
+ 
     <!-- 에러 -->
     <div class="err" id="errBox"></div>
-
+ 
     <!-- 입력 폼 -->
     <div id="formSection">
       <p class="slbl">생년월일시 입력</p>
@@ -176,13 +176,13 @@ body{font-family:'Noto Serif KR',serif;min-height:100vh;
       </div>
       <button class="sbtn" onclick="analyze()">✦ 천명을 열다 ✦</button>
     </div>
-
+ 
     <!-- 로딩 -->
     <div class="loading" id="loadingSection">
       <div class="spin">☯</div>
       <p class="lmsg">천명을 읽는 중…</p>
     </div>
-
+ 
     <!-- 결과 -->
     <div class="result-area" id="resultSection">
       <p class="rname" id="rname"></p>
@@ -191,18 +191,18 @@ body{font-family:'Noto Serif KR',serif;min-height:100vh;
       <button class="rbtn" onclick="reset()">↺ 다시 입력하기</button>
     </div>
   </div>
-
+ 
   <footer class="footer">
     <span>사주팔자는 동양 철학의 지혜</span>
     <span style="color:#b8860b;opacity:.3;margin:0 8px">◈</span>
     <span>재미로 즐기는 운명의 나침반</span>
   </footer>
 </div>
-
+ 
 <script>
 // ★ 여기에 Cloudflare Worker URL 입력
 const WORKER_URL = 'https://saju-proxy.cutypurity.workers.dev';
-
+ 
 const HS=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
 const EB=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
 const HS_ELEM=['목','목','화','화','토','토','금','금','수','수'];
@@ -224,23 +224,23 @@ const SECTION_DEFS=[
   {key:'advice',icon:'📜',label:'천명의 한마디'},
 ];
 const ORDERED_KEYS=['title','daymaster','personality','strength','weakness','love','career','luck2025','advice'];
-
+ 
 let gender='';
 function setGender(g){
   gender=g;
   document.getElementById('g남').classList.toggle('on',g==='남');
   document.getElementById('g여').classList.toggle('on',g==='여');
 }
-
+ 
 function getYearPillar(y){const h=(y-4)%10,e=(y-4)%12;return{hs:((h%10)+10)%10,eb:((e%12)+12)%12};}
 function getMonthPillar(y,m){const eb=(m+1)%12,hs=((Math.floor(((y-4)%10)/2)*2+(m+1))%10+10)%10;return{hs,eb};}
 function getDayPillar(y,m,d){const diff=Math.floor((new Date(y,m-1,d)-new Date(1900,0,31))/86400000);return{hs:((diff%10)+10)%10,eb:((diff%12)+12)%12};}
 function getHourPillar(dh,hb){return{hs:((dh%2===0?0:5)+hb)%10,eb:hb};}
 function countElems(ps){const c={목:0,화:0,토:0,금:0,수:0};ps.forEach(p=>{c[HS_ELEM[p.hs]]++;c[EB_ELEM[p.eb]]++;});return c;}
-
+ 
 function showErr(msg){const e=document.getElementById('errBox');e.textContent='⚠️ '+msg;e.classList.add('on');}
 function hideErr(){document.getElementById('errBox').classList.remove('on');}
-
+ 
 async function analyze(){
   const y=parseInt(document.getElementById('year').value);
   const m=parseInt(document.getElementById('month').value);
@@ -248,25 +248,25 @@ async function analyze(){
   const hour=document.getElementById('hour').value;
   if(!y||!m||!d||!hour||!gender){alert('모든 항목을 입력해주세요.');return;}
   if(y<1900||y>2025){alert('연도를 1900~2025 사이로 입력해주세요.');return;}
-
+ 
   hideErr();
   const hb=HOUR_MAP[hour];
   const yP=getYearPillar(y),mP=getMonthPillar(y,m),dP=getDayPillar(y,m,d),hP=getHourPillar(dP.hs,hb);
   const ps=[yP,mP,dP,hP];
   const ec=countElems(ps);
   const dominant=Object.entries(ec).sort((a,b)=>b[1]-a[1])[0][0];
-
+ 
   // 폼 숨기고 로딩
   document.getElementById('formSection').style.display='none';
   document.getElementById('loadingSection').classList.add('on');
-
+ 
   // 프롬프트
   const pStr=ps.map((p,i)=>`${['년주','월주','일주','시주'][i]}:${HS[p.hs]}${EB[p.eb]}`).join(', ');
   const prompt=`사주팔자 전문가. JSON만 반환. 설명/마크다운 없이.\n정보: ${y}년 ${m}월 ${d}일 ${hour} ${gender}성 / ${pStr}\n{"title":"20자내 인상적 한줄","daymaster":"일간특성 2문장","personality":"성격기질 이모지포함 2문장","strength":"강점 1-2문장","weakness":"약점 유머러스 1문장","love":"연애운 1-2문장","career":"직업적성 1-2문장","luck2025":"2025운세 재미있게 2문장","advice":"시적인 한마디"}`;
-
+ 
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),20000);
-
+ 
   try{
     const res=await fetch(WORKER_URL,{
       method:'POST',signal:controller.signal,
@@ -277,8 +277,11 @@ async function analyze(){
     const data=await res.json();
     if(data.error) throw new Error(data.error.message);
     const text=data.content.map(c=>c.text||'').join('');
-    const clean=text.replace(/```json[\s\S]*?```|```/g,'').trim();
-    const result=JSON.parse(clean);
+    // 코드블록 또는 날 JSON 모두 처리
+    const codeBlock=text.match(/```(?:json)?\s*([\s\S]*?)```/);
+    const jsonBlock=text.match(/\{[\s\S]*\}/);
+    const raw=(codeBlock?codeBlock[1]:jsonBlock?jsonBlock[0]:text).trim();
+    const result=JSON.parse(raw);
     showResult(result,ps,ec,dominant,y,m,d,hour,gender);
   }catch(e){
     clearTimeout(timeout);
@@ -287,13 +290,13 @@ async function analyze(){
     showErr(e.name==='AbortError'?'응답 시간 초과 (20초). Worker URL을 확인해주세요.':`오류: ${e.message}`);
   }
 }
-
+ 
 function showResult(result,ps,ec,dominant,y,m,d,hour,gender){
   document.getElementById('loadingSection').classList.remove('on');
-
+ 
   // 이름
   document.getElementById('rname').textContent=`${y}년 ${m}월 ${d}일 ${gender}성${result.title?' — '+result.title:''}`;
-
+ 
   // 팔자
   const pd=document.getElementById('pillarsDiv');
   pd.innerHTML='';
@@ -301,7 +304,7 @@ function showResult(result,ps,ec,dominant,y,m,d,hour,gender){
     if(i>0){const sep=document.createElement('div');sep.className='psep';pd.appendChild(sep);}
     pd.innerHTML+=`<div class="pillar"><span class="plbl">${PILLAR_LABELS[i]}</span><div class="ph">${HS[p.hs]}</div><div class="pe">${EB[p.eb]}</div></div>`;
   });
-
+ 
   // 섹션 생성
   const sd=document.getElementById('sectionsDiv');
   sd.innerHTML='';
@@ -320,9 +323,9 @@ function showResult(result,ps,ec,dominant,y,m,d,hour,gender){
     div.innerHTML=`<p class="rst"><span>${s.icon}</span>${s.label}</p>${body}`;
     sd.appendChild(div);
   });
-
+ 
   document.getElementById('resultSection').classList.add('on');
-
+ 
   // 순차 등장
   SECTION_DEFS.forEach((s,i)=>{
     setTimeout(()=>{
@@ -337,7 +340,7 @@ function showResult(result,ps,ec,dominant,y,m,d,hour,gender){
     },i*180);
   });
 }
-
+ 
 function reset(){
   document.getElementById('resultSection').classList.remove('on');
   document.getElementById('formSection').style.display='block';
