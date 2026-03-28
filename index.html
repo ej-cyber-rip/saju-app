@@ -288,23 +288,17 @@ async function analyze(){
     const res=await fetch(WORKER_URL,{
       method:'POST',signal:controller.signal,
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:700,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1500,messages:[{role:'user',content:prompt}]})
     });
     clearTimeout(timeout);
     const data=await res.json();
     if(data.error) throw new Error(data.error.message);
     const text=data.content.map(c=>c.text||'').join('');
-    // 디버그: 원문 표시
-    console.log('RAW RESPONSE:', text);
-    // 모든 경우의 JSON 추출
-    let raw = text;
-    // 코드블록 제거
-    raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
-    // { 이전 텍스트 제거, } 이후 텍스트 제거
-    const start = raw.indexOf('{');
-    const end = raw.lastIndexOf('}');
+    // { ... } 블록 추출
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
     if(start === -1 || end === -1) throw new Error('응답 원문: ' + text.slice(0,200));
-    raw = raw.slice(start, end+1);
+    const raw = text.slice(start, end+1);
     let result;
     try { result = JSON.parse(raw); }
     catch(pe) { throw new Error('파싱실패. 원문: ' + text.slice(0,200)); }
