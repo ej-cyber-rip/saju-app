@@ -95,6 +95,17 @@ body{font-family:'Noto Serif KR',serif;min-height:100vh;
   display:none;}
 .err.on{display:block;}
 .footer{text-align:center;margin-top:40px;font-size:.68rem;letter-spacing:.13em;color:rgba(245,234,214,.22);}
+.today-box{background:linear-gradient(135deg,rgba(184,134,11,.08),rgba(192,57,43,.05));
+  border:1px solid rgba(184,134,11,.25);padding:14px 16px;border-radius:1px;line-height:1.9;
+  font-size:.93rem;color:#1a0a00;opacity:.85;}
+.today-date{font-size:.65rem;font-weight:600;letter-spacing:.15em;color:#b8860b;margin-bottom:8px;opacity:.8;}
+.daewoon-box{display:flex;flex-direction:column;gap:10px;}
+.daewoon-bar{height:6px;border-radius:3px;background:linear-gradient(to right,#b8860b,#c0392b);
+  position:relative;overflow:hidden;}
+.daewoon-bar::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+  animation:shine 2s ease infinite;}
+@keyframes shine{to{left:100%}}
 </style>
 </head>
 <body>
@@ -103,7 +114,7 @@ body{font-family:'Noto Serif KR',serif;min-height:100vh;
 <div class="lantern" style="left:92%;height:90px;animation-delay:1.2s"></div>
 <div class="lantern" style="left:28%;height:62px;animation-delay:0.6s"></div>
 <div class="lantern" style="left:72%;height:62px;animation-delay:1.8s"></div>
- 
+
 <div class="page">
   <header class="hdr">
     <div class="hdeco">
@@ -114,16 +125,16 @@ body{font-family:'Noto Serif KR',serif;min-height:100vh;
     <h1 class="sititle">사주팔자</h1>
     <p class="sisub">생년월일시로 읽는 천명天命의 지도</p>
   </header>
- 
+
   <div class="card">
     <div class="cn tl"></div><div class="cn tr"></div>
     <div class="cn bl"></div><div class="cn br"></div>
     <span class="cdeco" style="top:9px;left:9px">◈</span>
     <span class="cdeco" style="bottom:9px;right:9px">◈</span>
- 
+
     <!-- 에러 -->
     <div class="err" id="errBox"></div>
- 
+
     <!-- 입력 폼 -->
     <div id="formSection">
       <p class="slbl">생년월일시 입력</p>
@@ -176,13 +187,13 @@ body{font-family:'Noto Serif KR',serif;min-height:100vh;
       </div>
       <button class="sbtn" onclick="analyze()">✦ 천명을 열다 ✦</button>
     </div>
- 
+
     <!-- 로딩 -->
     <div class="loading" id="loadingSection">
       <div class="spin">☯</div>
       <p class="lmsg">천명을 읽는 중…</p>
     </div>
- 
+
     <!-- 결과 -->
     <div class="result-area" id="resultSection">
       <p class="rname" id="rname"></p>
@@ -191,18 +202,18 @@ body{font-family:'Noto Serif KR',serif;min-height:100vh;
       <button class="rbtn" onclick="reset()">↺ 다시 입력하기</button>
     </div>
   </div>
- 
+
   <footer class="footer">
     <span>사주팔자는 동양 철학의 지혜</span>
     <span style="color:#b8860b;opacity:.3;margin:0 8px">◈</span>
     <span>재미로 즐기는 운명의 나침반</span>
   </footer>
 </div>
- 
+
 <script>
 // ★ 여기에 Cloudflare Worker URL 입력
 const WORKER_URL = 'https://saju-proxy.cutypurity.workers.dev';
- 
+
 const HS=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
 const EB=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
 const HS_ELEM=['목','목','화','화','토','토','금','금','수','수'];
@@ -221,26 +232,28 @@ const SECTION_DEFS=[
   {key:'love',icon:'❤️',label:'연애운'},
   {key:'career',icon:'💼',label:'직업과 적성'},
   {key:'luck2025',icon:'🌟',label:'2025년 운세'},
+  {key:'today',icon:'☀️',label:'오늘의 운세'},
+  {key:'daewoon',icon:'🌊',label:'대운 흐름'},
   {key:'advice',icon:'📜',label:'천명의 한마디'},
 ];
-const ORDERED_KEYS=['title','daymaster','personality','strength','weakness','love','career','luck2025','advice'];
- 
+const ORDERED_KEYS=['title','daymaster','personality','strength','weakness','love','career','luck2025','today','daewoon','advice'];
+
 let gender='';
 function setGender(g){
   gender=g;
   document.getElementById('g남').classList.toggle('on',g==='남');
   document.getElementById('g여').classList.toggle('on',g==='여');
 }
- 
+
 function getYearPillar(y){const h=(y-4)%10,e=(y-4)%12;return{hs:((h%10)+10)%10,eb:((e%12)+12)%12};}
 function getMonthPillar(y,m){const eb=(m+1)%12,hs=((Math.floor(((y-4)%10)/2)*2+(m+1))%10+10)%10;return{hs,eb};}
 function getDayPillar(y,m,d){const diff=Math.floor((new Date(y,m-1,d)-new Date(1900,0,31))/86400000);return{hs:((diff%10)+10)%10,eb:((diff%12)+12)%12};}
 function getHourPillar(dh,hb){return{hs:((dh%2===0?0:5)+hb)%10,eb:hb};}
 function countElems(ps){const c={목:0,화:0,토:0,금:0,수:0};ps.forEach(p=>{c[HS_ELEM[p.hs]]++;c[EB_ELEM[p.eb]]++;});return c;}
- 
+
 function showErr(msg){const e=document.getElementById('errBox');e.textContent='⚠️ '+msg;e.classList.add('on');}
 function hideErr(){document.getElementById('errBox').classList.remove('on');}
- 
+
 async function analyze(){
   const y=parseInt(document.getElementById('year').value);
   const m=parseInt(document.getElementById('month').value);
@@ -248,25 +261,29 @@ async function analyze(){
   const hour=document.getElementById('hour').value;
   if(!y||!m||!d||!hour||!gender){alert('모든 항목을 입력해주세요.');return;}
   if(y<1900||y>2025){alert('연도를 1900~2025 사이로 입력해주세요.');return;}
- 
+
   hideErr();
   const hb=HOUR_MAP[hour];
   const yP=getYearPillar(y),mP=getMonthPillar(y,m),dP=getDayPillar(y,m,d),hP=getHourPillar(dP.hs,hb);
   const ps=[yP,mP,dP,hP];
   const ec=countElems(ps);
   const dominant=Object.entries(ec).sort((a,b)=>b[1]-a[1])[0][0];
- 
+
   // 폼 숨기고 로딩
   document.getElementById('formSection').style.display='none';
   document.getElementById('loadingSection').classList.add('on');
- 
+
+  // 오늘 날짜
+  const today=new Date();
+  const todayStr=`${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
+
   // 프롬프트
   const pStr=ps.map((p,i)=>`${['년주','월주','일주','시주'][i]}:${HS[p.hs]}${EB[p.eb]}`).join(', ');
-  const prompt=`사주팔자 전문가. JSON만 반환. 설명/마크다운 없이.\n정보: ${y}년 ${m}월 ${d}일 ${hour} ${gender}성 / ${pStr}\n{"title":"20자내 인상적 한줄","daymaster":"일간특성 2문장","personality":"성격기질 이모지포함 2문장","strength":"강점 1-2문장","weakness":"약점 유머러스 1문장","love":"연애운 1-2문장","career":"직업적성 1-2문장","luck2025":"2025운세 재미있게 2문장","advice":"시적인 한마디"}`;
- 
+  const prompt=`사주팔자 전문가. JSON만 반환. 설명/마크다운 없이.\n정보: ${y}년 ${m}월 ${d}일 ${hour} ${gender}성 / ${pStr}\n오늘날짜: ${todayStr}\n{"title":"20자내 인상적 한줄","daymaster":"일간특성 2문장","personality":"성격기질 이모지포함 2문장","strength":"강점 1-2문장","weakness":"약점 유머러스 1문장","love":"연애운 1-2문장","career":"직업적성 1-2문장","luck2025":"2025년 전체운세 2문장","today":"오늘(${todayStr}) 운세를 재미있고 구체적으로 2-3문장. 오늘 주의할 점과 행운 포인트 포함","daewoon":"현재 대운(10년 주기 운의 흐름)을 분석. 지금 어떤 대운 시기인지, 앞으로 10-20년 흐름을 3-4문장으로 설명","advice":"시적인 한마디"}`;
+
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),20000);
- 
+
   try{
     const res=await fetch(WORKER_URL,{
       method:'POST',signal:controller.signal,
@@ -290,13 +307,13 @@ async function analyze(){
     showErr(e.name==='AbortError'?'응답 시간 초과 (20초). Worker URL을 확인해주세요.':`오류: ${e.message}`);
   }
 }
- 
+
 function showResult(result,ps,ec,dominant,y,m,d,hour,gender){
   document.getElementById('loadingSection').classList.remove('on');
- 
+
   // 이름
   document.getElementById('rname').textContent=`${y}년 ${m}월 ${d}일 ${gender}성${result.title?' — '+result.title:''}`;
- 
+
   // 팔자
   const pd=document.getElementById('pillarsDiv');
   pd.innerHTML='';
@@ -304,7 +321,7 @@ function showResult(result,ps,ec,dominant,y,m,d,hour,gender){
     if(i>0){const sep=document.createElement('div');sep.className='psep';pd.appendChild(sep);}
     pd.innerHTML+=`<div class="pillar"><span class="plbl">${PILLAR_LABELS[i]}</span><div class="ph">${HS[p.hs]}</div><div class="pe">${EB[p.eb]}</div></div>`;
   });
- 
+
   // 섹션 생성
   const sd=document.getElementById('sectionsDiv');
   sd.innerHTML='';
@@ -317,21 +334,42 @@ function showResult(result,ps,ec,dominant,y,m,d,hour,gender){
       const badges=Object.entries(ec).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1])
         .map(([el,cnt])=>`<span class="badge" style="border-color:${ELEM_COLOR[el]};color:${ELEM_COLOR[el]};background:${ELEM_COLOR[el]}0f">${ELEM_EMOJI[el]} ${el} ×${cnt}</span>`).join('');
       body=`<div>${badges}</div><p style="margin-top:8px;font-size:.82rem;opacity:.5">주도적 기운: ${ELEM_EMOJI[dominant]} ${dominant}</p>`;
+    }else if(s.key==='today'){
+      const td=new Date();
+      const dateLabel=`${td.getFullYear()}년 ${td.getMonth()+1}월 ${td.getDate()}일`;
+      body=`<div class="skel" id="skel-today"></div><div id="body-today" style="display:none"><p class="today-date">📅 ${dateLabel} 운세</p><div class="today-box" id="today-text"></div></div>`;
+    }else if(s.key==='daewoon'){
+      body=`<div class="skel" id="skel-daewoon"></div><div id="body-daewoon" style="display:none"><div class="daewoon-box"><div class="daewoon-bar" id="daewoon-bar"></div><p class="rsb" id="daewoon-text"></p></div></div>`;
     }else{
       body=`<div class="skel" id="skel-${s.key}"></div><p class="rsb" id="body-${s.key}" style="display:none"></p>`;
     }
     div.innerHTML=`<p class="rst"><span>${s.icon}</span>${s.label}</p>${body}`;
     sd.appendChild(div);
   });
- 
+
   document.getElementById('resultSection').classList.add('on');
- 
+
   // 순차 등장
   SECTION_DEFS.forEach((s,i)=>{
     setTimeout(()=>{
       const el=document.getElementById('rs-'+s.key);
       if(el) el.classList.add('show');
-      if(s.key!=='element'&&result[s.key]){
+      if(s.key==='element') return;
+      if(s.key==='today'&&result.today){
+        document.getElementById('skel-today').style.display='none';
+        document.getElementById('today-text').textContent=result.today;
+        document.getElementById('body-today').style.display='block';
+      }else if(s.key==='daewoon'&&result.daewoon){
+        document.getElementById('skel-daewoon').style.display='none';
+        document.getElementById('daewoon-text').textContent=result.daewoon;
+        document.getElementById('body-daewoon').style.display='block';
+        // 대운 바 애니메이션
+        setTimeout(()=>{
+          const bar=document.getElementById('daewoon-bar');
+          if(bar){bar.style.width='0';bar.style.transition='width 1.2s ease';
+            setTimeout(()=>{bar.style.width='100%';},50);}
+        },200);
+      }else if(result[s.key]){
         const skel=document.getElementById('skel-'+s.key);
         const body=document.getElementById('body-'+s.key);
         if(skel) skel.style.display='none';
@@ -340,7 +378,7 @@ function showResult(result,ps,ec,dominant,y,m,d,hour,gender){
     },i*180);
   });
 }
- 
+
 function reset(){
   document.getElementById('resultSection').classList.remove('on');
   document.getElementById('formSection').style.display='block';
