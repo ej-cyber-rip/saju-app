@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사주팔자 — 천명을 읽다</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Serif KR',serif;min-height:100vh;
+  background:radial-gradient(ellipse at 20% 30%,#2a1200,#0d0600 60%,#000);
+  position:relative;overflow-x:hidden;}
+.grid{position:fixed;inset:0;pointer-events:none;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(180,140,50,.04) 60px),
+  repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(180,140,50,.04) 60px);}
+.lantern{position:fixed;width:5px;border-radius:3px;top:0;
+  background:linear-gradient(to bottom,#b8860b,#e6a800,#b8860b);
+  box-shadow:0 0 18px 7px rgba(230,168,0,.22),0 0 50px 16px rgba(200,100,0,.09);
+  animation:sway 4s ease-in-out infinite;}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.page{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:52px 20px 80px;}
+.hdr{text-align:center;margin-bottom:44px;animation:fdown .9s ease both;}
+@keyframes fdown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+.hdeco{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px;}
+.hline{flex:1;height:1px;background:linear-gradient(to right,transparent,#b8860b,transparent);}
+.sititle{font-size:clamp(2.2rem,7vw,3.6rem);font-weight:900;color:#f5ead6;
+  letter-spacing:.18em;text-shadow:2px 2px 0 #c0392b,0 0 28px rgba(245,234,214,.18);margin-bottom:6px;}
+.sisub{font-size:.8rem;font-weight:300;color:#d4a017;letter-spacing:.28em;opacity:.9;}
+.card{background:#f5ead6;border:2px solid #b8860b;border-radius:2px;padding:36px 32px;
+  position:relative;animation:fup .9s ease .25s both;
+  box-shadow:0 0 0 5px rgba(184,134,11,.07),0 18px 52px rgba(0,0,0,.55),inset 0 0 36px rgba(245,234,214,.25);}
+@keyframes fup{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+.cn{position:absolute;width:18px;height:18px;border-color:#c0392b;border-style:solid;opacity:.55;}
+.tl{top:7px;left:7px;border-width:2px 0 0 2px}.tr{top:7px;right:7px;border-width:2px 2px 0 0}
+.bl{bottom:7px;left:7px;border-width:0 0 2px 2px}.br{bottom:7px;right:7px;border-width:0 2px 2px 0}
+.cdeco{position:absolute;color:#c0392b;font-size:12px;opacity:.6;}
+.slbl{font-size:.7rem;font-weight:600;letter-spacing:.22em;color:#c0392b;
+  margin-bottom:18px;display:flex;align-items:center;gap:9px;}
+.slbl::after{content:'';flex:1;height:1px;background:linear-gradient(to right,#c0392b,transparent);opacity:.35;}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px;}
+@media(max-width:500px){.fgrid{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:7px;}.full{grid-column:1/-1;}
+.field label{font-size:.68rem;font-weight:600;letter-spacing:.18em;color:#1a0a00;opacity:.6;}
+.field select,.field input{font-family:'Noto Serif KR',serif;font-size:.95rem;color:#1a0a00;
+  background:transparent;border:none;border-bottom:1.5px solid rgba(26,10,0,.22);
+  padding:7px 0;outline:none;width:100%;transition:border-color .25s;}
+.field select:focus,.field input:focus{border-bottom-color:#c0392b;}
+.field select{cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 4px center;padding-right:18px;}
+.gbrow{display:flex;gap:12px;padding:7px 0;}
+.gbtn{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:.85rem;color:#1a0a00;
+  padding:6px 16px;border:1.5px solid rgba(26,10,0,.2);transition:all .2s;}
+.gbtn.on{border-color:#c0392b;background:rgba(192,57,43,.07);color:#c0392b;font-weight:600;}
+.sbtn{width:100%;padding:15px;background:#1a0a00;color:#d4a017;border:1.5px solid #b8860b;
+  font-family:'Noto Serif KR',serif;font-size:.97rem;font-weight:600;letter-spacing:.22em;
+  cursor:pointer;transition:all .3s;margin-top:6px;}
+.sbtn:hover{background:#2a1400;box-shadow:0 0 18px rgba(184,134,11,.28);letter-spacing:.3em;}
+.loading{text-align:center;padding:44px 0 32px;display:none;}
+.loading.on{display:block;}
+.spin{font-size:2.6rem;color:#b8860b;display:inline-block;
+  animation:spin 3s linear infinite;text-shadow:0 0 18px rgba(184,134,11,.55);}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lmsg{margin-top:16px;font-size:.85rem;letter-spacing:.1em;color:#1a0a00;opacity:.45;}
+.pillars{display:flex;justify-content:center;align-items:flex-start;margin:16px 0 24px;}
+.pillar{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.plbl{font-size:.56rem;letter-spacing:.08em;color:#b8860b;opacity:.8;margin-bottom:2px;}
+.ph{width:50px;height:50px;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;font-weight:900;background:#1a0a00;color:#d4a017;
+  border:1px solid #b8860b;}
+.pe{width:50px;height:50px;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;font-weight:900;background:#ede0c4;color:#1a0a00;border:1px solid rgba(26,10,0,.25);}
+.psep{width:1px;background:rgba(26,10,0,.12);margin:20px 8px 0;height:106px;}
+.rname{font-size:1rem;color:#c0392b;letter-spacing:.12em;text-align:center;margin-bottom:4px;}
+.result-area{display:none;}.result-area.on{display:block;}
+.rs{margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid rgba(26,10,0,.1);
+  opacity:0;transform:translateY(10px);transition:opacity .4s ease,transform .4s ease;}
+.rs.show{opacity:1;transform:translateY(0);}
+.rs:last-child{border-bottom:none;margin-bottom:0;}
+.rst{font-size:.68rem;font-weight:600;letter-spacing:.2em;color:#c0392b;
+  margin-bottom:11px;display:flex;align-items:center;gap:7px;}
+.rst::after{content:'';flex:1;height:1px;background:linear-gradient(to right,#c0392b,transparent);opacity:.3;}
+.rsb{font-size:.93rem;line-height:1.9;color:#1a0a00;opacity:.85;}
+.skel{height:1.5em;border-radius:2px;
+  background:linear-gradient(90deg,rgba(26,10,0,.07) 25%,rgba(26,10,0,.13) 50%,rgba(26,10,0,.07) 75%);
+  background-size:200% 100%;animation:shimmer 1.3s infinite;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.badge{padding:3px 12px;font-size:.72rem;letter-spacing:.08em;font-weight:600;border:1px solid;margin:3px;display:inline-block;}
+.rbtn{display:block;margin:22px auto 0;padding:9px 28px;background:transparent;color:#1a0a00;
+  border:1px solid rgba(26,10,0,.25);font-family:'Noto Serif KR',serif;font-size:.77rem;
+  letter-spacing:.18em;cursor:pointer;transition:all .3s;opacity:.5;}
+.rbtn:hover{opacity:1;border-color:#c0392b;color:#c0392b;}
+.err{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.3);
+  padding:12px 16px;margin-bottom:16px;font-size:.8rem;color:#922b21;line-height:1.7;
+  display:none;}
+.err.on{display:block;}
+.footer{text-align:center;margin-top:40px;font-size:.68rem;letter-spacing:.13em;color:rgba(245,234,214,.22);}
+</style>
+</head>
+<body>
+<div class="grid"></div>
+<div class="lantern" style="left:8%;height:90px;animation-delay:0s"></div>
+<div class="lantern" style="left:92%;height:90px;animation-delay:1.2s"></div>
+<div class="lantern" style="left:28%;height:62px;animation-delay:0.6s"></div>
+<div class="lantern" style="left:72%;height:62px;animation-delay:1.8s"></div>
+
+<div class="page">
+  <header class="hdr">
+    <div class="hdeco">
+      <div class="hline"></div>
+      <span style="font-size:26px;color:#b8860b;text-shadow:0 0 18px rgba(184,134,11,.7)">☯</span>
+      <div class="hline"></div>
+    </div>
+    <h1 class="sititle">사주팔자</h1>
+    <p class="sisub">생년월일시로 읽는 천명天命의 지도</p>
+  </header>
+
+  <div class="card">
+    <div class="cn tl"></div><div class="cn tr"></div>
+    <div class="cn bl"></div><div class="cn br"></div>
+    <span class="cdeco" style="top:9px;left:9px">◈</span>
+    <span class="cdeco" style="bottom:9px;right:9px">◈</span>
+
+    <!-- 에러 -->
+    <div class="err" id="errBox"></div>
+
+    <!-- 입력 폼 -->
+    <div id="formSection">
+      <p class="slbl">생년월일시 입력</p>
+      <div class="fgrid">
+        <div class="field">
+          <label>출생 연도</label>
+          <input type="number" id="year" placeholder="예) 1990" min="1900" max="2025">
+        </div>
+        <div class="field">
+          <label>출생 월</label>
+          <select id="month">
+            <option value="">월 선택</option>
+            <option value="1">1월 (寅)</option><option value="2">2월 (卯)</option>
+            <option value="3">3월 (辰)</option><option value="4">4월 (巳)</option>
+            <option value="5">5월 (午)</option><option value="6">6월 (未)</option>
+            <option value="7">7월 (申)</option><option value="8">8월 (酉)</option>
+            <option value="9">9월 (戌)</option><option value="10">10월 (亥)</option>
+            <option value="11">11월 (子)</option><option value="12">12월 (丑)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>출생 일</label>
+          <input type="number" id="day" placeholder="예) 15" min="1" max="31">
+        </div>
+        <div class="field">
+          <label>출생 시간</label>
+          <select id="hour">
+            <option value="">시간 선택</option>
+            <option value="자시">자시 子 (23–01)</option>
+            <option value="축시">축시 丑 (01–03)</option>
+            <option value="인시">인시 寅 (03–05)</option>
+            <option value="묘시">묘시 卯 (05–07)</option>
+            <option value="진시">진시 辰 (07–09)</option>
+            <option value="사시">사시 巳 (09–11)</option>
+            <option value="오시">오시 午 (11–13)</option>
+            <option value="미시">미시 未 (13–15)</option>
+            <option value="신시">신시 申 (15–17)</option>
+            <option value="유시">유시 酉 (17–19)</option>
+            <option value="술시">술시 戌 (19–21)</option>
+            <option value="해시">해시 亥 (21–23)</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>성별</label>
+          <div class="gbrow">
+            <div class="gbtn" id="g남" onclick="setGender('남')">♂ 남성</div>
+            <div class="gbtn" id="g여" onclick="setGender('여')">♀ 여성</div>
+          </div>
+        </div>
+      </div>
+      <button class="sbtn" onclick="analyze()">✦ 천명을 열다 ✦</button>
+    </div>
+
+    <!-- 로딩 -->
+    <div class="loading" id="loadingSection">
+      <div class="spin">☯</div>
+      <p class="lmsg">천명을 읽는 중…</p>
+    </div>
+
+    <!-- 결과 -->
+    <div class="result-area" id="resultSection">
+      <p class="rname" id="rname"></p>
+      <div class="pillars" id="pillarsDiv"></div>
+      <div id="sectionsDiv"></div>
+      <button class="rbtn" onclick="reset()">↺ 다시 입력하기</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>사주팔자는 동양 철학의 지혜</span>
+    <span style="color:#b8860b;opacity:.3;margin:0 8px">◈</span>
+    <span>재미로 즐기는 운명의 나침반</span>
+  </footer>
+</div>
+
+<script>
+// ★ 여기에 Cloudflare Worker URL 입력
+const WORKER_URL = 'https://saju-proxy.cutypurity.workers.dev';
+
+const HS=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const EB=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const HS_ELEM=['목','목','화','화','토','토','금','금','수','수'];
+const EB_ELEM=['수','토','목','목','토','화','화','토','금','금','토','수'];
+const HOUR_MAP={자시:0,축시:1,인시:2,묘시:3,진시:4,사시:5,오시:6,미시:7,신시:8,유시:9,술시:10,해시:11};
+const ELEM_COLOR={목:'#27ae60',화:'#c0392b',토:'#8B5E3C',금:'#b8860b',수:'#2980b9'};
+const ELEM_EMOJI={목:'🌳',화:'🔥',토:'🌏',금:'⚔️',수:'💧'};
+const PILLAR_LABELS=['년주 年柱','월주 月柱','일주 日柱','시주 時柱'];
+const SECTION_DEFS=[
+  {key:'title',icon:'✦',label:'천명 한줄'},
+  {key:'daymaster',icon:'☯',label:'일간 — 나의 본질'},
+  {key:'personality',icon:'🎭',label:'성격과 기질'},
+  {key:'element',icon:'⚡',label:'오행 구성'},
+  {key:'strength',icon:'✨',label:'강점과 재능'},
+  {key:'weakness',icon:'⚠️',label:'조심할 점'},
+  {key:'love',icon:'❤️',label:'연애운'},
+  {key:'career',icon:'💼',label:'직업과 적성'},
+  {key:'luck2025',icon:'🌟',label:'2025년 운세'},
+  {key:'advice',icon:'📜',label:'천명의 한마디'},
+];
+const ORDERED_KEYS=['title','daymaster','personality','strength','weakness','love','career','luck2025','advice'];
+
+let gender='';
+function setGender(g){
+  gender=g;
+  document.getElementById('g남').classList.toggle('on',g==='남');
+  document.getElementById('g여').classList.toggle('on',g==='여');
+}
+
+function getYearPillar(y){const h=(y-4)%10,e=(y-4)%12;return{hs:((h%10)+10)%10,eb:((e%12)+12)%12};}
+function getMonthPillar(y,m){const eb=(m+1)%12,hs=((Math.floor(((y-4)%10)/2)*2+(m+1))%10+10)%10;return{hs,eb};}
+function getDayPillar(y,m,d){const diff=Math.floor((new Date(y,m-1,d)-new Date(1900,0,31))/86400000);return{hs:((diff%10)+10)%10,eb:((diff%12)+12)%12};}
+function getHourPillar(dh,hb){return{hs:((dh%2===0?0:5)+hb)%10,eb:hb};}
+function countElems(ps){const c={목:0,화:0,토:0,금:0,수:0};ps.forEach(p=>{c[HS_ELEM[p.hs]]++;c[EB_ELEM[p.eb]]++;});return c;}
+
+function showErr(msg){const e=document.getElementById('errBox');e.textContent='⚠️ '+msg;e.classList.add('on');}
+function hideErr(){document.getElementById('errBox').classList.remove('on');}
+
+async function analyze(){
+  const y=parseInt(document.getElementById('year').value);
+  const m=parseInt(document.getElementById('month').value);
+  const d=parseInt(document.getElementById('day').value);
+  const hour=document.getElementById('hour').value;
+  if(!y||!m||!d||!hour||!gender){alert('모든 항목을 입력해주세요.');return;}
+  if(y<1900||y>2025){alert('연도를 1900~2025 사이로 입력해주세요.');return;}
+
+  hideErr();
+  const hb=HOUR_MAP[hour];
+  const yP=getYearPillar(y),mP=getMonthPillar(y,m),dP=getDayPillar(y,m,d),hP=getHourPillar(dP.hs,hb);
+  const ps=[yP,mP,dP,hP];
+  const ec=countElems(ps);
+  const dominant=Object.entries(ec).sort((a,b)=>b[1]-a[1])[0][0];
+
+  // 폼 숨기고 로딩
+  document.getElementById('formSection').style.display='none';
+  document.getElementById('loadingSection').classList.add('on');
+
+  // 프롬프트
+  const pStr=ps.map((p,i)=>`${['년주','월주','일주','시주'][i]}:${HS[p.hs]}${EB[p.eb]}`).join(', ');
+  const prompt=`사주팔자 전문가. JSON만 반환. 설명/마크다운 없이.\n정보: ${y}년 ${m}월 ${d}일 ${hour} ${gender}성 / ${pStr}\n{"title":"20자내 인상적 한줄","daymaster":"일간특성 2문장","personality":"성격기질 이모지포함 2문장","strength":"강점 1-2문장","weakness":"약점 유머러스 1문장","love":"연애운 1-2문장","career":"직업적성 1-2문장","luck2025":"2025운세 재미있게 2문장","advice":"시적인 한마디"}`;
+
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),20000);
+
+  try{
+    const res=await fetch(WORKER_URL,{
+      method:'POST',signal:controller.signal,
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:700,messages:[{role:'user',content:prompt}]})
+    });
+    clearTimeout(timeout);
+    const data=await res.json();
+    if(data.error) throw new Error(data.error.message);
+    const text=data.content.map(c=>c.text||'').join('');
+    const clean=text.replace(/```json[\s\S]*?```|```/g,'').trim();
+    const result=JSON.parse(clean);
+    showResult(result,ps,ec,dominant,y,m,d,hour,gender);
+  }catch(e){
+    clearTimeout(timeout);
+    document.getElementById('loadingSection').classList.remove('on');
+    document.getElementById('formSection').style.display='block';
+    showErr(e.name==='AbortError'?'응답 시간 초과 (20초). Worker URL을 확인해주세요.':`오류: ${e.message}`);
+  }
+}
+
+function showResult(result,ps,ec,dominant,y,m,d,hour,gender){
+  document.getElementById('loadingSection').classList.remove('on');
+
+  // 이름
+  document.getElementById('rname').textContent=`${y}년 ${m}월 ${d}일 ${gender}성${result.title?' — '+result.title:''}`;
+
+  // 팔자
+  const pd=document.getElementById('pillarsDiv');
+  pd.innerHTML='';
+  ps.forEach((p,i)=>{
+    if(i>0){const sep=document.createElement('div');sep.className='psep';pd.appendChild(sep);}
+    pd.innerHTML+=`<div class="pillar"><span class="plbl">${PILLAR_LABELS[i]}</span><div class="ph">${HS[p.hs]}</div><div class="pe">${EB[p.eb]}</div></div>`;
+  });
+
+  // 섹션 생성
+  const sd=document.getElementById('sectionsDiv');
+  sd.innerHTML='';
+  SECTION_DEFS.forEach(s=>{
+    const div=document.createElement('div');
+    div.className='rs';
+    div.id='rs-'+s.key;
+    let body='';
+    if(s.key==='element'){
+      const badges=Object.entries(ec).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1])
+        .map(([el,cnt])=>`<span class="badge" style="border-color:${ELEM_COLOR[el]};color:${ELEM_COLOR[el]};background:${ELEM_COLOR[el]}0f">${ELEM_EMOJI[el]} ${el} ×${cnt}</span>`).join('');
+      body=`<div>${badges}</div><p style="margin-top:8px;font-size:.82rem;opacity:.5">주도적 기운: ${ELEM_EMOJI[dominant]} ${dominant}</p>`;
+    }else{
+      body=`<div class="skel" id="skel-${s.key}"></div><p class="rsb" id="body-${s.key}" style="display:none"></p>`;
+    }
+    div.innerHTML=`<p class="rst"><span>${s.icon}</span>${s.label}</p>${body}`;
+    sd.appendChild(div);
+  });
+
+  document.getElementById('resultSection').classList.add('on');
+
+  // 순차 등장
+  SECTION_DEFS.forEach((s,i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById('rs-'+s.key);
+      if(el) el.classList.add('show');
+      if(s.key!=='element'&&result[s.key]){
+        const skel=document.getElementById('skel-'+s.key);
+        const body=document.getElementById('body-'+s.key);
+        if(skel) skel.style.display='none';
+        if(body){body.textContent=result[s.key];body.style.display='block';}
+      }
+    },i*180);
+  });
+}
+
+function reset(){
+  document.getElementById('resultSection').classList.remove('on');
+  document.getElementById('formSection').style.display='block';
+  document.getElementById('year').value='';
+  document.getElementById('month').value='';
+  document.getElementById('day').value='';
+  document.getElementById('hour').value='';
+  gender='';
+  document.getElementById('g남').classList.remove('on');
+  document.getElementById('g여').classList.remove('on');
+  hideErr();
+}
+</script>
+</body>
+</html>
