@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="bg" cx="25%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#2a1200"/>
+      <stop offset="60%" stop-color="#0d0600"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#b8860b" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#b8860b" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- 그리드 패턴 -->
+  <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+    <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(180,140,50,0.04)" stroke-width="1"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- 중앙 글로우 -->
+  <ellipse cx="600" cy="315" rx="400" ry="250" fill="url(#glow)" filter="url(#blur)"/>
+
+  <!-- 홍등 왼쪽 -->
+  <rect x="80" y="0" width="5" height="100" rx="2" fill="url(#lanternGrad)"/>
+  <defs>
+    <linearGradient id="lanternGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b8860b"/>
+      <stop offset="50%" stop-color="#e6a800"/>
+      <stop offset="100%" stop-color="#b8860b"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="82" cy="115" rx="18" ry="25" fill="rgba(230,168,0,0.15)"/>
+
+  <!-- 홍등 오른쪽 -->
+  <rect x="1115" y="0" width="5" height="100" rx="2" fill="url(#lanternGrad)"/>
+  <ellipse cx="1117" cy="115" rx="18" ry="25" fill="rgba(230,168,0,0.15)"/>
+
+  <!-- 상단 장식선 -->
+  <line x1="200" y1="120" x2="540" y2="120" stroke="url(#lineGrad)" stroke-width="1"/>
+  <line x1="660" y1="120" x2="1000" y2="120" stroke="url(#lineGrad2)" stroke-width="1"/>
+  <defs>
+    <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="100%" stop-color="#b8860b"/>
+    </linearGradient>
+    <linearGradient id="lineGrad2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#b8860b"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 태극 문양 -->
+  <text x="600" y="145" font-size="42" text-anchor="middle" fill="#b8860b"
+    style="filter: drop-shadow(0 0 12px rgba(184,134,11,0.8))">☯</text>
+
+  <!-- 메인 타이틀 -->
+  <text x="600" y="280" font-size="110" font-weight="900" text-anchor="middle"
+    font-family="'Noto Serif KR', serif"
+    fill="#f5ead6"
+    style="letter-spacing: 0.15em">사주팔자</text>
+
+  <!-- 타이틀 그림자 효과 -->
+  <text x="604" y="284" font-size="110" font-weight="900" text-anchor="middle"
+    font-family="'Noto Serif KR', serif"
+    fill="#c0392b" opacity="0.6"
+    style="letter-spacing: 0.15em">사주팔자</text>
+  <text x="600" y="280" font-size="110" font-weight="900" text-anchor="middle"
+    font-family="'Noto Serif KR', serif"
+    fill="#f5ead6"
+    style="letter-spacing: 0.15em">사주팔자</text>
+
+  <!-- 부제목 -->
+  <text x="600" y="355" font-size="26" font-weight="300" text-anchor="middle"
+    font-family="'Noto Serif KR', serif"
+    fill="#d4a017" opacity="0.9"
+    style="letter-spacing: 0.28em">생년월일시로 읽는 천명天命의 지도</text>
+
+  <!-- 구분선 -->
+  <line x1="300" y1="400" x2="560" y2="400" stroke="rgba(184,134,11,0.4)" stroke-width="1"/>
+  <text x="600" y="405" font-size="18" text-anchor="middle" fill="#b8860b" opacity="0.7">◈</text>
+  <line x1="640" y1="400" x2="900" y2="400" stroke="rgba(184,134,11,0.4)" stroke-width="1"/>
+
+  <!-- 기능 태그들 -->
+  <g font-family="'Noto Serif KR', serif" font-size="20" fill="#d4a017" opacity="0.75">
+    <text x="240" y="460" text-anchor="middle">✦ 성격 분석</text>
+    <text x="420" y="460" text-anchor="middle">☀️ 오늘의 운세</text>
+    <text x="600" y="460" text-anchor="middle">🌊 대운 흐름</text>
+    <text x="780" y="460" text-anchor="middle">❤️ 연애운</text>
+    <text x="960" y="460" text-anchor="middle">💼 직업운</text>
+  </g>
+
+  <!-- 하단 장식 -->
+  <rect x="100" y="520" width="1000" height="1px" fill="rgba(184,134,11,0.15)"/>
+  <text x="600" y="570" font-size="18" text-anchor="middle"
+    font-family="'Noto Serif KR', serif"
+    fill="rgba(245,234,214,0.3)" style="letter-spacing:0.15em">
+    사주팔자는 동양 철학의 지혜 ◈ 재미로 즐기는 운명의 나침반
+  </text>
+
+  <!-- 테두리 장식 -->
+  <rect x="30" y="30" width="1140" height="570" fill="none"
+    stroke="rgba(184,134,11,0.12)" stroke-width="1"/>
+  <rect x="40" y="40" width="1120" height="550" fill="none"
+    stroke="rgba(184,134,11,0.06)" stroke-width="1"/>
+
+  <!-- 모서리 장식 -->
+  <g stroke="#c0392b" stroke-width="2" fill="none" opacity="0.5">
+    <path d="M 50 50 L 50 80 M 50 50 L 80 50"/>
+    <path d="M 1150 50 L 1150 80 M 1150 50 L 1120 50"/>
+    <path d="M 50 580 L 50 550 M 50 580 L 80 580"/>
+    <path d="M 1150 580 L 1150 550 M 1150 580 L 1120 580"/>
+  </g>
+</svg>
